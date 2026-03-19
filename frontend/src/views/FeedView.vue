@@ -22,9 +22,41 @@
           <span class="date">{{ formatDate(post.createdAt) }}</span>
         </div>
         <div class="post-content custom-styled" v-html="post.content"></div>
-        <div v-if="post.username === currentUsername" class="post-actions">
-          <button @click="openEditModal(post)" class="btn-secondary edit-btn">Edit</button>
-          <button @click="deletePost(post.id)" class="btn-secondary delete-btn">Delete</button>
+        <div class="post-actions">
+          <button @click="toggleComments(post.id)" class="btn-secondary toggle-comments-btn">
+            {{ showCommentsData[post.id] ? 'Hide Comments' : 'View Comments' }}
+          </button>
+          <div class="author-actions" v-if="post.username === currentUsername">
+            <button @click="openEditModal(post)" class="btn-secondary edit-btn">Edit</button>
+            <button @click="deletePost(post.id)" class="btn-secondary delete-btn">Delete</button>
+          </div>
+        </div>
+        
+        <div v-if="showCommentsData[post.id]" class="comments-section animate-slide-down">
+          <div v-if="commentsData[post.id]?.length === 0" class="empty-state small-empty">No comments yet.</div>
+          <div v-for="comment in commentsData[post.id]" :key="comment.id" class="comment-item">
+            <div class="comment-header">
+              <span class="author">@{{ comment.username }}</span>
+              <span class="date">{{ formatDate(comment.createdAt) }}</span>
+            </div>
+            <div class="comment-content custom-styled" v-html="comment.content"></div>
+          </div>
+          <div v-if="isAuthenticated" class="comment-form">
+            <textarea 
+              v-model="newCommentData[post.id]" 
+              class="input-field content-input small-textarea" 
+              placeholder="Add a comment with custom styled HTML..."
+              rows="2"
+            ></textarea>
+            <div class="comment-form-actions">
+              <button @click="submitComment(post.id)" class="btn-primary small-btn" :disabled="!newCommentData[post.id]?.trim()">
+                Post Comment
+              </button>
+            </div>
+          </div>
+          <div v-else class="login-prompt small-login-prompt">
+            <router-link to="/login">Log in</router-link> to reply.
+          </div>
         </div>
       </div>
     </div>
@@ -49,6 +81,9 @@ import PostCreate from '../components/PostCreate.vue';
 const posts = ref([]);
 const loadingPosts = ref(true);
 const isAuthenticated = ref(!!localStorage.getItem('token'));
+const commentsData = ref({});
+const newCommentData = ref({});
+const showCommentsData = ref({});
 
 const currentUsername = computed(() => {
   const token = localStorage.getItem('token');
@@ -79,6 +114,36 @@ const fetchPosts = async () => {
 
 const handlePostCreated = (newPost) => {
   posts.value.unshift(newPost);
+};
+
+const toggleComments = async (postId) => {
+  if (showCommentsData.value[postId]) {
+    showCommentsData.value[postId] = false;
+  } else {
+    showCommentsData.value[postId] = true;
+    if (!commentsData.value[postId]) {
+      try {
+        const response = await api.get(`/posts/${postId}/comments`);
+        commentsData.value[postId] = response.data;
+      } catch (err) {
+      }
+    }
+  }
+};
+
+const submitComment = async (postId) => {
+  const content = newCommentData.value[postId];
+  if (!content || !content.trim()) return;
+  
+  try {
+    const response = await api.post(`/posts/${postId}/comments`, { content });
+    if (!commentsData.value[postId]) {
+      commentsData.value[postId] = [];
+    }
+    commentsData.value[postId].push(response.data);
+    newCommentData.value[postId] = '';
+  } catch (err) {
+  }
 };
 
 const openEditModal = (post) => {
@@ -201,11 +266,19 @@ onMounted(() => {
 }
 .post-actions {
   display: flex;
-  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 16px;
   padding-top: 12px;
   border-top: 1px solid rgba(48, 54, 61, 0.3);
-  justify-content: flex-end;
+}
+.author-actions {
+  display: flex;
+  gap: 8px;
+}
+.toggle-comments-btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
 }
 .edit-btn, .delete-btn {
   padding: 6px 12px;
@@ -273,5 +346,67 @@ onMounted(() => {
   justify-content: flex-end;
   gap: 12px;
   margin-top: 16px;
+}
+.comments-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(48, 54, 61, 0.5);
+  background: rgba(13, 17, 23, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+}
+.comment-item {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.3);
+}
+.comment-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.comment-content {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  word-break: break-word;
+}
+.small-empty {
+  padding: 10px;
+  font-size: 0.9rem;
+}
+.comment-form {
+  margin-top: 16px;
+}
+.small-textarea {
+  min-height: 60px;
+}
+.comment-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.small-btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+.small-login-prompt {
+  padding: 10px;
+  font-size: 0.9rem;
+  margin-top: 12px;
+  background: transparent;
+  border: 1px solid rgba(88, 166, 255, 0.2);
+}
+.small-login-prompt a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+.small-login-prompt a:hover {
+  text-decoration: underline;
 }
 </style>

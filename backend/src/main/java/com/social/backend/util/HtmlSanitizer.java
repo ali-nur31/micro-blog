@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 public class HtmlSanitizer {
 
     public String sanitize(String html) {
-        // Allow basic structural tags and inline CSS
         Safelist safelist = Safelist.relaxed()
                 .addAttributes(":all", "style")
                 .addAttributes(":all", "class");

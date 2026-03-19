@@ -1,9 +1,13 @@
 package com.social.backend.service;
 
+import com.social.backend.dto.CommentRequest;
+import com.social.backend.dto.CommentResponse;
 import com.social.backend.dto.PostRequest;
 import com.social.backend.dto.PostResponse;
+import com.social.backend.model.Comment;
 import com.social.backend.model.Post;
 import com.social.backend.model.User;
+import com.social.backend.repository.CommentRepository;
 import com.social.backend.repository.PostRepository;
 import com.social.backend.repository.UserRepository;
 import com.social.backend.util.HtmlSanitizer;
@@ -21,6 +25,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final HtmlSanitizer htmlSanitizer;
 
     public List<PostResponse> getAllPosts() {
@@ -78,5 +83,36 @@ public class PostService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Unauthorized");
         }
         postRepository.delete(post);
+    }
+
+    public List<CommentResponse> getComments(Long postId) {
+        return commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId).stream().map(comment -> {
+            CommentResponse response = new CommentResponse();
+            response.setId(comment.getId());
+            response.setContent(comment.getContent());
+            response.setCreatedAt(comment.getCreatedAt());
+            response.setUsername(comment.getUser().getUsername());
+            return response;
+        }).collect(Collectors.toList());
+    }
+
+    public CommentResponse addComment(Long postId, CommentRequest request, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+        
+        Comment comment = new Comment();
+        comment.setContent(htmlSanitizer.sanitize(request.getContent()));
+        comment.setUser(user);
+        comment.setPost(post);
+        comment = commentRepository.save(comment);
+
+        CommentResponse response = new CommentResponse();
+        response.setId(comment.getId());
+        response.setContent(comment.getContent());
+        response.setCreatedAt(comment.getCreatedAt());
+        response.setUsername(comment.getUser().getUsername());
+        return response;
     }
 }

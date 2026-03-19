@@ -1,5 +1,7 @@
 package com.social.backend.controller;
 
+import com.social.backend.dto.CommentRequest;
+import com.social.backend.dto.CommentResponse;
 import com.social.backend.dto.PostRequest;
 import com.social.backend.dto.PostResponse;
 import com.social.backend.service.PostService;
@@ -39,5 +41,16 @@ public class PostController {
         String username = authentication.getName();
         postService.deletePost(id, username);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable Long postId) {
+        return ResponseEntity.ok(postService.getComments(postId));
+    }
+
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<CommentResponse> addComment(@PathVariable Long postId, @RequestBody CommentRequest request, Authentication authentication) {
+        String username = authentication.getName();
+        return ResponseEntity.ok(postService.addComment(postId, request, username));
     }
 }
