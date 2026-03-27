@@ -8,7 +8,9 @@ function Chat() {
     const [messages, setMessages] = useState([]);
     const [conversations, setConversations] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [searchUser, setSearchUser] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
     const [activeChat, setActiveChat] = useState('');
     const { token, username } = useAuth();
     const stompClient = useRef(null);
@@ -92,19 +94,34 @@ function Chat() {
         stompClient.current = client;
     };
 
-    const startChat = (e) => {
-        e.preventDefault();
-        if (searchUser.trim()) {
-            setActiveChat(searchUser.trim());
-            setSearchUser('');
-
-            setConversations(prev => {
-                if (!prev.find(c => c.username === searchUser.trim())) {
-                    return [{ username: searchUser.trim(), lastMessage: 'New conversation...', timestamp: new Date().toISOString() }, ...prev];
-                }
-                return prev;
-            });
+    const handleSearch = async (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+        if (query.trim().length > 0) {
+            setIsSearching(true);
+            try {
+                const res = await api.get(`/users/search?query=${query}`);
+                setSearchResults(res.data);
+            } catch (err) {
+            } finally {
+                setIsSearching(false);
+            }
+        } else {
+            setSearchResults([]);
+            setIsSearching(false);
         }
+    };
+
+    const selectSearchUser = (targetUsername) => {
+        setSearchQuery('');
+        setSearchResults([]);
+        setActiveChat(targetUsername);
+        setConversations(prev => {
+            if (!prev.find(c => c.username === targetUsername)) {
+                return [{ username: targetUsername, lastMessage: 'New conversation...', timestamp: new Date().toISOString() }, ...prev];
+            }
+            return prev;
+        });
     };
 
     const sendMessage = (e) => {
@@ -136,19 +153,37 @@ function Chat() {
         <div className="container animate-fade-in" style={{ display: 'flex', height: '85vh', gap: '20px' }}>
             <div className="glass" style={{ width: '30%', display: 'flex', flexDirection: 'column', padding: '20px', overflow: 'hidden' }}>
                 <h3 style={{ marginBottom: '15px' }}>Conversations</h3>
-                <form onSubmit={startChat} style={{ display: 'flex', gap: '5px', marginBottom: '15px' }}>
+                <div style={{ position: 'relative', marginBottom: '15px' }}>
                     <input
                         type="text"
-                        value={searchUser}
-                        onChange={(e) => setSearchUser(e.target.value)}
-                        placeholder="Search username..."
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        placeholder="Search username to chat..."
                         className="input-field"
-                        style={{ flex: 1, marginBottom: 0, padding: '8px' }}
+                        style={{ width: '100%', marginBottom: 0, padding: '8px' }}
                     />
-                    <button type="submit" className="btn-secondary" disabled={!searchUser.trim()} style={{ padding: '8px 12px' }}>
-                        Chat
-                    </button>
-                </form>
+                    {searchQuery.trim().length > 0 && (
+                        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: '#1f2937', border: '1px solid #374151', boxShadow: '0 8px 16px rgba(0,0,0,0.5)', borderRadius: '0 0 8px 8px', zIndex: 50, maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+                            {isSearching ? (
+                                <div style={{ padding: '10px', textAlign: 'center', color: '#9ca3af', fontSize: '0.9rem' }}>Searching...</div>
+                            ) : searchResults.length > 0 ? (
+                                searchResults.map(u => (
+                                    <div
+                                        key={u.id}
+                                        onClick={() => selectSearchUser(u.username)}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#374151'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                        style={{ padding: '8px 12px', cursor: 'pointer', borderBottom: '1px solid #374151', transition: 'background-color 0.2s', lineHeight: '1.5', width: '100%', boxSizing: 'border-box', color: '#f3f4f6' }}
+                                    >
+                                        @{u.username}
+                                    </div>
+                                ))
+                            ) : (
+                                <div style={{ padding: '10px', textAlign: 'center', color: '#9ca3af', fontSize: '0.9rem' }}>User not found</div>
+                            )}
+                        </div>
+                    )}
+                </div>
                 <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingRight: '5px' }}>
                     {conversations.length === 0 ? (
                         <p style={{ color: 'var(--text-secondary)', textAlign: 'center', fontSize: '0.9rem' }}>No active chats.</p>

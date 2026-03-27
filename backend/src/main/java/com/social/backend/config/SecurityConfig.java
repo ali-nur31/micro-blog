@@ -48,6 +48,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/posts/*/comments").permitAll()
                 .requestMatchers("/api/chat/history").permitAll()
                 .requestMatchers("/ws/**").permitAll()
+                .requestMatchers("/api/users/search").authenticated()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
