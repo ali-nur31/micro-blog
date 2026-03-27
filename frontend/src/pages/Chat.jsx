@@ -66,7 +66,8 @@ function Chat() {
     };
 
     const connectWebSocket = () => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const wsUrl = import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace(/\/api\/?$/, '') + '/ws' : 'http://localhost:8080/ws';
+        const socket = new SockJS(wsUrl);
         const client = new Client({
             webSocketFactory: () => socket,
             connectHeaders: { Authorization: `Bearer ${token}` },
