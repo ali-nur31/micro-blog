@@ -53,4 +53,11 @@ public class PostController {
         String username = authentication.getName();
         return ResponseEntity.ok(postService.addComment(postId, request, username));
     }
+
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long postId, @PathVariable Long commentId, Authentication authentication) {
+        String username = authentication.getName();
+        postService.deleteComment(commentId, username);
+        return ResponseEntity.noContent().build();
+    }
 }

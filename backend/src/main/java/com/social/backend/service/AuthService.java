@@ -27,9 +27,10 @@ public class AuthService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(com.social.backend.model.Role.USER);
         userRepository.save(user);
 
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
         return new AuthResponse(token);
     }
 
@@ -37,7 +38,9 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
-        String token = jwtUtil.generateToken(request.getUsername());
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
         return new AuthResponse(token);
     }
 }

@@ -8,6 +8,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [username, setUsername] = useState(null);
+    const [role, setRole] = useState(null);
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
     const [loading, setLoading] = useState(true);
 
@@ -16,11 +17,13 @@ export const AuthProvider = ({ children }) => {
             try {
                 const payload = JSON.parse(atob(token.split('.')[1]));
                 setUsername(payload.sub);
+                setRole(payload.role);
             } catch (e) {
                 logout();
             }
         } else {
             setUsername(null);
+            setRole(null);
         }
         setLoading(false);
     }, [token]);
@@ -46,6 +49,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
         setToken(null);
         setUsername(null);
+        setRole(null);
     };
 
     const toggleTheme = () => {
@@ -53,7 +57,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ token, username, login, register, logout, theme, toggleTheme, loading }}>
+        <AuthContext.Provider value={{ token, username, role, login, register, logout, theme, toggleTheme, loading }}>
             {children}
         </AuthContext.Provider>
     );

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Moon, Sun } from 'lucide-react';
 
 function Navbar() {
-    const { token, logout, theme, toggleTheme } = useAuth();
+    const { token, role, logout, theme, toggleTheme } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -26,6 +26,8 @@ function Navbar() {
                     <>
                         <Link to="/feed" className="nav-link">Feed</Link>
                         <Link to="/profile" className="nav-link">Profile</Link>
+                        <Link to="/chat" className="nav-link">Chat</Link>
+                        {role === 'ADMIN' && <Link to="/admin" className="nav-link" style={{ color: 'var(--accent-color)' }}>Admin</Link>}
                         <button onClick={handleLogout} className="btn-secondary">Logout</button>
                     </>
                 ) : (

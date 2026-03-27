@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Feed from './pages/Feed';
@@ -10,6 +11,8 @@ import Profile from './pages/Profile';
 import PostDetail from './pages/PostDetail';
 import PostCreate from './pages/PostCreate';
 import NotFound from './pages/NotFound';
+import AdminDashboard from './pages/AdminDashboard';
+import Chat from './pages/Chat';
 
 function App() {
   const { loading, token } = useAuth();
@@ -33,6 +36,11 @@ function App() {
             <Route path="/post/create" element={<PostCreate />} />
             <Route path="/post/:id" element={<PostDetail />} />
             <Route path="/post/:id/edit" element={<PostCreate isEdit={true} />} />
+            <Route path="/chat" element={<Chat />} />
+          </Route>
+
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminDashboard />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

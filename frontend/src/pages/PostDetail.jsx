@@ -11,7 +11,7 @@ function PostDetail() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
-    const { username } = useAuth();
+    const { username, role } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -63,6 +63,16 @@ function PostDetail() {
         }
     };
 
+    const handleCommentDelete = async (commentId) => {
+        if (!window.confirm('Are you sure you want to delete this comment?')) return;
+        try {
+            await api.delete(`/posts/${id}/comments/${commentId}`);
+            setComments(comments.filter(c => c.id !== commentId));
+        } catch (err) {
+            alert('Failed to delete comment');
+        }
+    };
+
     if (loading) return <div className="container" style={{ textAlign: 'center' }}><span className="loader"></span></div>;
     if (error) return <div className="container"><div className="error-banner">{error}</div><Link to="/feed">Back to Feed</Link></div>;
 
@@ -79,9 +89,9 @@ function PostDetail() {
                 </div>
                 <div dangerouslySetInnerHTML={{ __html: post.content }} style={{ marginBottom: '20px', wordBreak: 'break-word', fontSize: '1.1rem' }} />
 
-                {post.username === username && (
+                {(post.username === username || role === 'ADMIN' || role === 'MANAGER') && (
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-                        <Link to={`/post/${post.id}/edit`} className="btn-secondary" style={{ textDecoration: 'none' }}>Edit</Link>
+                        {post.username === username && <Link to={`/post/${post.id}/edit`} className="btn-secondary" style={{ textDecoration: 'none' }}>Edit</Link>}
                         <button onClick={handleDelete} className="btn-secondary" style={{ color: '#f85149', borderColor: 'rgba(248, 81, 73, 0.3)' }}>Delete</button>
                     </div>
                 )}
@@ -101,6 +111,12 @@ function PostDetail() {
                                     <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{new Date(c.createdAt).toLocaleString()}</span>
                                 </div>
                                 <div dangerouslySetInnerHTML={{ __html: c.content }} style={{ wordBreak: 'break-word', fontSize: '0.95rem' }} />
+
+                                {(c.username === username || role === 'ADMIN' || role === 'MANAGER') && (
+                                    <div style={{ textAlign: 'right', marginTop: '8px' }}>
+                                        <button onClick={() => handleCommentDelete(c.id)} className="btn-secondary" style={{ color: '#f85149', borderColor: 'rgba(248, 81, 73, 0.3)', fontSize: '0.75rem', padding: '4px 8px' }}>Delete</button>
+                                    </div>
+                                )}
                             </div>
                         ))
                     )}

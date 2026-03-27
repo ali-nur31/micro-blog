@@ -9,7 +9,7 @@ function Feed() {
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [sortOrder, setSortOrder] = useState('newest');
-    const { username } = useAuth();
+    const { username, role } = useAuth();
     const [deletingId, setDeletingId] = useState(null);
 
     useEffect(() => {
@@ -106,9 +106,9 @@ function Feed() {
                                 <Link to={`/post/${post.id}`} className="btn-secondary" style={{ textDecoration: 'none', fontSize: '0.85rem', padding: '6px 12px' }}>
                                     View Details
                                 </Link>
-                                {post.username === username && (
+                                {(post.username === username || role === 'ADMIN' || role === 'MANAGER') && (
                                     <>
-                                        <Link to={`/post/${post.id}/edit`} className="btn-secondary" style={{ textDecoration: 'none', fontSize: '0.85rem', padding: '6px 12px' }}>Edit</Link>
+                                        {post.username === username && <Link to={`/post/${post.id}/edit`} className="btn-secondary" style={{ textDecoration: 'none', fontSize: '0.85rem', padding: '6px 12px' }}>Edit</Link>}
                                         <button onClick={() => handleDelete(post.id)} className="btn-secondary" style={{ color: '#f85149', borderColor: 'rgba(248, 81, 73, 0.3)', fontSize: '0.85rem', padding: '6px 12px' }}>Delete</button>
                                     </>
                                 )}

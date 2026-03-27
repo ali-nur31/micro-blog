@@ -79,7 +79,11 @@ public class PostService {
     public void deletePost(Long id, String username) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
-        if (!post.getUser().getUsername().equals(username)) {
+        User requester = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        if (!post.getUser().getUsername().equals(username) && 
+            requester.getRole() != com.social.backend.model.Role.ADMIN && 
+            requester.getRole() != com.social.backend.model.Role.MANAGER) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Unauthorized");
         }
         postRepository.delete(post);
@@ -114,5 +118,18 @@ public class PostService {
         response.setCreatedAt(comment.getCreatedAt());
         response.setUsername(comment.getUser().getUsername());
         return response;
+    }
+
+    public void deleteComment(Long commentId, String username) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
+        User requester = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        if (!comment.getUser().getUsername().equals(username) && 
+            requester.getRole() != com.social.backend.model.Role.ADMIN && 
+            requester.getRole() != com.social.backend.model.Role.MANAGER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Unauthorized");
+        }
+        commentRepository.delete(comment);
     }
 }
