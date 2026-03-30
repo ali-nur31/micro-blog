@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/posts/*/comments").permitAll()
-                .requestMatchers("/api/chat/history").permitAll()
+                .requestMatchers("/api/chat/**").authenticated()
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/api/users/search").authenticated()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

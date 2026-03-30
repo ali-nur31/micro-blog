@@ -42,14 +42,18 @@ function Chat() {
 
     const fetchConversations = async () => {
         try {
-            const res = await api.get('/chat/conversations');
+            const res = await api.get('/chat/conversations', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setConversations(res.data);
         } catch (error) { }
     };
 
     const fetchHistory = async (targetUser) => {
         try {
-            const res = await api.get(`/chat/history/${targetUser}`);
+            const res = await api.get(`/chat/history/${targetUser}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setMessages(res.data);
         } catch (error) { }
     };
