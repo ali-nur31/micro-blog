@@ -154,8 +154,8 @@ function Chat() {
     };
 
     return (
-        <div className="container animate-fade-in" style={{ display: 'flex', height: '85vh', gap: '20px' }}>
-            <div className="glass" style={{ width: '30%', display: 'flex', flexDirection: 'column', padding: '20px', overflow: 'hidden' }}>
+        <div className="container animate-fade-in chat-wrapper">
+            <div className={`glass chat-sidebar ${activeChat ? 'hidden-mobile' : ''}`} style={{ display: 'flex', flexDirection: 'column', padding: '20px', overflow: 'hidden' }}>
                 <h3 style={{ marginBottom: '15px' }}>Conversations</h3>
                 <div style={{ position: 'relative', marginBottom: '15px' }}>
                     <input
@@ -216,10 +216,15 @@ function Chat() {
                 </div>
             </div>
 
-            <div className="glass" style={{ width: '70%', display: 'flex', flexDirection: 'column', padding: '20px', overflow: 'hidden' }}>
-                <h2 style={{ marginBottom: '20px' }}>
-                    {activeChat ? `Chatting with @${activeChat}` : 'Direct Messages'}
-                </h2>
+            <div className={`glass chat-main ${!activeChat ? 'hidden-mobile' : ''}`} style={{ display: 'flex', flexDirection: 'column', padding: '20px', overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                    <button className="mobile-only btn-secondary" onClick={() => setActiveChat('')} style={{ marginRight: '10px', padding: '6px 12px' }}>
+                        Back
+                    </button>
+                    <h2 style={{ margin: 0 }}>
+                        {activeChat ? `Chatting with @${activeChat}` : 'Direct Messages'}
+                    </h2>
+                </div>
 
                 <div style={{ flex: 1, overflowY: 'auto', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '10px', backgroundColor: 'var(--bg-primary)', padding: '15px', borderRadius: '8px' }}>
                     {!activeChat ? (

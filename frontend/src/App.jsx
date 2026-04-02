@@ -23,29 +23,31 @@ function App() {
 
   return (
     <Router>
-      <Navbar />
-      <main className="main-content">
-        <Routes>
-          <Route path="/" element={!token ? <Home /> : <Navigate to="/feed" />} />
-          <Route path="/login" element={!token ? <Auth isLogin={true} /> : <Navigate to="/feed" />} />
-          <Route path="/register" element={!token ? <Auth isLogin={false} /> : <Navigate to="/feed" />} />
+      <div className="app-layout">
+        <Navbar />
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={!token ? <Home /> : <Navigate to="/feed" />} />
+            <Route path="/login" element={!token ? <Auth isLogin={true} /> : <Navigate to="/feed" />} />
+            <Route path="/register" element={!token ? <Auth isLogin={false} /> : <Navigate to="/feed" />} />
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="/feed" element={<Feed />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/post/create" element={<PostCreate />} />
-            <Route path="/post/:id" element={<PostDetail />} />
-            <Route path="/post/:id/edit" element={<PostCreate isEdit={true} />} />
-            <Route path="/chat" element={<Chat />} />
-          </Route>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/feed" element={<Feed />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/post/create" element={<PostCreate />} />
+              <Route path="/post/:id" element={<PostDetail />} />
+              <Route path="/post/:id/edit" element={<PostCreate isEdit={true} />} />
+              <Route path="/chat" element={<Chat />} />
+            </Route>
 
-          <Route element={<AdminRoute />}>
-            <Route path="/admin" element={<AdminDashboard />} />
-          </Route>
+            <Route element={<AdminRoute />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+            </Route>
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+      </div>
     </Router>
   );
 }

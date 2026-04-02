@@ -1,7 +1,7 @@
-# MicroBlog: Minimalist Social Network
+# Chatti: Minimalist Social Network
 
 ## 1. Project Title & Overview
-MicroBlog is a minimalist microblogging platform designed to support a global feed structure. A core value proposition of the platform is the ability for users to construct visually unique posts by safely injecting basic structural HTML (`<div>`, `<span>`, `<b>`, `<i>`) and inline CSS styles (`style="..."`). This enables high customizability per post while mitigating security risks.
+Chatti is a minimalist microblogging platform designed to support a global feed structure. A core value proposition of the platform is the ability for users to construct visually unique posts by safely injecting basic structural HTML (`<div>`, `<span>`, `<b>`, `<i>`) and inline CSS styles (`style="..."`). This enables high customizability per post while mitigating security risks.
 
 ## 2. Tech Stack
 **Backend**:

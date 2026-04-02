@@ -48,39 +48,41 @@ function AdminDashboard() {
             <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Admin Analytics Dashboard</h2>
             {error && <div className="error-banner">{error}</div>}
 
-            {metrics && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px', marginBottom: '40px', flexWrap: 'wrap' }}>
-                    <div className="glass" style={{ padding: '20px', textAlign: 'center', flex: 1, minWidth: '150px' }}>
-                        <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--accent-color)' }}>{metrics.totalUsers}</div>
-                        <div style={{ color: 'var(--text-secondary)' }}>Total Users</div>
+            <div className="admin-grid" style={{ marginBottom: '40px' }}>
+                {metrics && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <div className="glass" style={{ padding: '20px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--accent-color)' }}>{metrics.totalUsers}</div>
+                            <div style={{ color: 'var(--text-secondary)' }}>Total Users</div>
+                        </div>
+                        <div className="glass" style={{ padding: '20px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--accent-color)' }}>{metrics.totalPosts}</div>
+                            <div style={{ color: 'var(--text-secondary)' }}>Total Posts</div>
+                        </div>
+                        <div className="glass" style={{ padding: '20px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--accent-color)' }}>{metrics.totalComments}</div>
+                            <div style={{ color: 'var(--text-secondary)' }}>Total Comments</div>
+                        </div>
                     </div>
-                    <div className="glass" style={{ padding: '20px', textAlign: 'center', flex: 1, minWidth: '150px' }}>
-                        <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--accent-color)' }}>{metrics.totalPosts}</div>
-                        <div style={{ color: 'var(--text-secondary)' }}>Total Posts</div>
-                    </div>
-                    <div className="glass" style={{ padding: '20px', textAlign: 'center', flex: 1, minWidth: '150px' }}>
-                        <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--accent-color)' }}>{metrics.totalComments}</div>
-                        <div style={{ color: 'var(--text-secondary)' }}>Total Comments</div>
-                    </div>
-                </div>
-            )}
+                )}
 
-            {activity.length > 0 && (
-                <div className="glass" style={{ padding: '20px', marginBottom: '40px' }}>
-                    <h3 style={{ marginBottom: '20px' }}>7-Day Post Activity</h3>
-                    <div style={{ height: '300px', width: '100%' }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={activity}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-                                <XAxis dataKey="date" stroke="var(--text-secondary)" />
-                                <YAxis stroke="var(--text-secondary)" allowDecimals={false} />
-                                <Tooltip contentStyle={{ backgroundColor: 'var(--bg-glass)', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }} />
-                                <Line type="monotone" dataKey="count" stroke="var(--accent-color)" strokeWidth={3} activeDot={{ r: 8 }} />
-                            </LineChart>
-                        </ResponsiveContainer>
+                {activity.length > 0 && (
+                    <div className="glass" style={{ padding: '20px', height: '100%', minHeight: '350px' }}>
+                        <h3 style={{ marginBottom: '20px' }}>7-Day Post Activity</h3>
+                        <div style={{ height: '300px', width: '100%' }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={activity}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
+                                    <XAxis dataKey="date" stroke="var(--text-secondary)" />
+                                    <YAxis stroke="var(--text-secondary)" allowDecimals={false} />
+                                    <Tooltip contentStyle={{ backgroundColor: 'var(--bg-glass)', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }} />
+                                    <Line type="monotone" dataKey="count" stroke="var(--accent-color)" strokeWidth={3} activeDot={{ r: 8 }} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
 
             <div className="glass" style={{ padding: '20px' }}>
                 <h3 style={{ marginBottom: '20px' }}>User Management</h3>
