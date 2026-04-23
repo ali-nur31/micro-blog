@@ -5,7 +5,7 @@ function Home() {
     return (
         <div className="container animate-fade-in" style={{ textAlign: 'center', marginTop: '10vh' }}>
             <h1 style={{ fontSize: '3rem', marginBottom: '20px', background: 'linear-gradient(90deg, #58a6ff, #a371f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                Welcome to MicroBlog
+                Welcome to Chatti
             </h1>
             <p style={{ fontSize: '1.2rem', marginBottom: '40px' }}>
                 The only microblogging platform that gives you complete control over your content with custom HTML styling.
